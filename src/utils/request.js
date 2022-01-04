@@ -28,7 +28,6 @@ instance.interceptors.response.use((res) => {
         // 清空本地无效用户信息
         // 跳转到登录页码
         // 跳转需要传参 给登录页
-        console.log('跳转')
         store.commit('user/setUser')
         const fullpath = encodeURIComponent(router.currentRoute.value.fullPath)
         router.push('/login?redirectUrl=' + fullpath)
@@ -36,7 +35,6 @@ instance.interceptors.response.use((res) => {
     return Promise.reject(err)              // 错误时候的处理
 })
 export default (url, method, data = {}) => {
-    console.log(1)
     return instance({
         method,
         url,

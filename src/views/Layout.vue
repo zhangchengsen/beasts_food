@@ -1,17 +1,20 @@
 <template>
 
-    <div>顶部</div>
+    <Top></Top>
+    <Header></Header>
     <!-- 顶部 -->
 
-    <div>头部</div>
     <!-- 头部 -->
-    <div class="main">
+    <div class="main" >
         <!-- 二级路由 -->
         <router-view />
     </div>
 
-    <div>底部x</div>
+    <Footer></Footer>
     <!-- 底部 -->
 </template>
 <script setup>
+    import Top from '@/components/layout/header.vue'
+    import Header from '@/components/layout/next_header.vue'
+    import Footer from '@/components/layout/footer.vue'
 </script>
