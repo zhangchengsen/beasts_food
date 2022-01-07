@@ -1,47 +1,94 @@
 <template>
   <div class="top-category">
+    <sticky-nav></sticky-nav>
     <div class="container">
       <!-- 面包屑 -->
-      <nmBread parentPath="/category/1005000">
-        <nmBreadItem to="/category/1004000">空调</nmBreadItem>
+      <nmBread>
+        <nmBreadItem to="/">首页</nmBreadItem>
+        <transition name="fade-right" mode="out-in">
+          <nmBreadItem :key="topCategory.id">{{
+            topCategory.name
+          }}</nmBreadItem>
+        </transition>
       </nmBread>
+
       <!-- 轮播图 -->
-      <!-- <XtxCarousel :sliders="sliders" style="height:500px" /> -->
+      <div style="height: 500px">
+        <nmSwipe :sliders="sliders" animated></nmSwipe>
+      </div>
       <!-- 所有二级分类 -->
-      <div class="sub-list">
+      <div class="sub-list" v-if="topCategory?.children">
         <h3>全部分类</h3>
         <ul>
-          <li v-for="sub in topCategory.children" :key="sub.id">
+          <li v-for="item in topCategory.children" :key="item.id">
             <a href="javascript:;">
-              <img :src="sub.picture" />
-              <p>{{ sub.name }}</p>
+              <img :src="item.picture" />
+              <p>{{ item.name }}</p>
             </a>
           </li>
         </ul>
       </div>
-      <!-- 各个分类推荐商品 -->
-      <div class="ref-goods" v-for="sub in subList" :key="sub.id">
+      <!-- 不同分类商品 -->
+      <div class="ref-goods" v-for="sub in subList.children" :key="sub.id">
         <div class="head">
-          <h3>- {{ sub.name }} -</h3>
+          <h3>{{ sub.name }}</h3>
           <p class="tag">温暖柔软，品质之选</p>
-          <!-- <XtxMore :path="`/category/sub/${sub.id}`" /> -->
+          <nmMore :path="`/category/sub/${sub.id}`" />
         </div>
         <div class="body">
-          <!-- <GoodsItem v-for="goods in sub.goods" :key="goods.id" :goods="goods" /> -->
+          <goodsItem
+            v-for="goods in sub.goods"
+            :key="goods.id"
+            :goods="goods"
+          />
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup>
+import goodsItem from "./components/goods_item.vue";
+import stickyNav from "@/components/layout/sticky_nav.vue";
+import { findBanner } from "@/api/home";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { useRoute } from "vue-router";
+import { computed, ref, reactive, watch } from "vue";
+import { findTopCategory } from "@/api/category";
 const store = useStore();
-const topCategory = new computed(() => {
-  return store.state.category.list;
+const route = useRoute();
+const topCategory = computed(() => {
+  let cate = {};
+  const item = store.state.category.list.find((item) => {
+    return item.id === route.params.id;
+  });
+  return item ? item : cate;
 });
+// 轮播图
+const subList = ref([]);
+const sliders = reactive([]);
+findBanner().then((data) => {
+  sliders.values = [...data.result];
+});
+const reqCategory = () => {
+  findTopCategory(route.params.id)
+    .then((res) => {
+      console.log(res);
+      subList.value = { ...res.result };
+      console.log(subList.value);
+    })
+    .catch((err) => {
+      console.log("err", subList.value);
+    });
+};
+watch(
+  () => route.params.id,
+  (newVal) => {
+    if (newVal && `/category/${newVal}` === route.path) reqCategory();
+  },
+  { immediate: true }
+);
 </script>
-<style lang="less">
+<style scoped lang="less">
 .top-category {
   h3 {
     font-size: 28px;
@@ -85,7 +132,7 @@ const topCategory = new computed(() => {
     margin-top: 20px;
     position: relative;
     .head {
-      .nm-more {
+      .xtx-more {
         position: absolute;
         top: 20px;
         right: 20px;

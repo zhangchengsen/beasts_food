@@ -8,7 +8,7 @@
       <!-- 轮播图 -->
       <!-- https://gtms03.alicdn.com/tps/i3/TB1gXd1JXXXXXapXpXXvKyzTVXX-520-280.jpg -->
       <div class="home-banner">
-        <nm-swipe :sliders="banner" animated></nm-swipe>
+        <nmSwipe :sliders="banner" animated />
       </div>
     </div>
     <home-new></home-new>

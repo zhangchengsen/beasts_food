@@ -2,21 +2,28 @@
 // 扩展vue原有的功能 全局组件 自定义指令 挂载原型方法 主语: 没有全局过滤器
 // vue2.0插件写法要素: 导出一个对象 有install函数 默认传入了Vue构造器 Vue基础之上扩展
 // vue3.0插件写法要素: 导出一个对象 有install函数 默认传入了App应用实例 app基础之上扩展
-import nmSkelect from './nm-Skelect.vue'
-import nmSwipe from './nm-Swipe.vue'
-import nmMore from './nm-more.vue'
-import nmBread from './nm-bread.vue'
-import nmBreadItem from './nm_bread_item.vue'
+// import nmSkelect from './nmSkelect.vue'
+// import nmSwipe from './nmSwipe.vue'
+// import nmMore from './nm-more.vue'
+// import nmBread from './nmbread.vue'
+// import nmBreadItem from './nm_bread_item.vue'
 import defaultImg from '@/assets/images/default.jpg'
 export default {
     install(app) {
         // 在app上进行扩展 app提供component directive 指定
         //  如果挂载原型 app.config.globalProperties 方式
-        app.component('nmSkelect', nmSkelect)
-        app.component('nmSwipe', nmSwipe)
-        app.component('nmMore', nmMore)
-        app.component('nmBread', nmBread)
-        app.component('nmBreadItem', nmBreadItem)
+        // app.component('nmSkelect',nmSkelect)
+        // app.component('nmSwipe',nmSwipe)
+        // app.component('nmMore',nmMore)
+        // app.component('nmBread',nmBread)
+        // app.component('nmBreadItem',nmBreadItem)
+        const importFn = require.context('./', false, /\.vue$/)
+        importFn.keys().forEach(path => {
+            const component = importFn(path).default
+            const sp = path.split('.')[1]
+            const componentName = sp.slice(1, sp.length)
+            app.component(componentName, component)
+        });
         defineDirective(app)
     }
 }
@@ -32,7 +39,7 @@ const defineDirective = (app) => {
             const observe = new IntersectionObserver(([{ isIntersecting }]) => {
                 if (isIntersecting) {
                     observe.unobserve(el)
-                    el.onerror = () => {
+                    el.onerror = (err) => {
                         el.src = defaultImg
                     }
                     el.src = binding.value

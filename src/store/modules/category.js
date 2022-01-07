@@ -14,11 +14,13 @@ export default {
             // 修改分类数据
             commit('setList', data.result)
 
+
         }
     },
     mutations: {
         setList(state, payload) {
             state.list = payload
+
         },
         show(state, id) {
             let index = state.list.findIndex(v => v.id === id)
