@@ -38,15 +38,19 @@ import { reactive, ref } from "vue";
 const banner = reactive([]);
 const show = ref(false);
 
-findBanner()
-  .then((res) => {
-    banner.values = [...res.result];
-  })
-  .catch((err) => {
-    console.log("findBanner ", err);
-  });
+findBanner().then((res) => {
+  banner.values = [...res.result];
+});
 </script>
 <style lang="less" scoped>
+.home-banner {
+  width: 1240px;
+  height: 500px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 98;
+}
 .v-enter-from {
   opacity: 0;
 }
@@ -65,14 +69,7 @@ findBanner()
 .v-leave-to {
   opacity: 0;
 }
-.home-banner {
-  width: 1240px;
-  height: 500px;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 98;
-}
+
 .nm-carousel {
   :deep(.carousel-btn.prev) {
     left: 270px;

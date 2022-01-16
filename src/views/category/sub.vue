@@ -39,7 +39,6 @@ const loadMore = () => {
   if (loading.value || finished.value) return;
   findSubCategoryGoods({ ...params, ...pageInfo, ...filter }).then(
     ({ result }) => {
-      console.log(result);
       goods_list.value = [...goods_list.value, ...result.items];
       if (result.items.length < 20) finished.value = true;
       pageInfo.page++;

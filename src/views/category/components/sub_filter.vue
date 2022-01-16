@@ -54,10 +54,8 @@ const change_brand = (id) => {
 };
 const change_properties = (p, item) => {
   if (p.selectedProp === item.id) return;
-  console.log(111);
   p.selectedProp = item.id;
   let index = params.attrs.findIndex((attr) => attr.groupName === p.name);
-  console.log(index);
   if (item.id === null) {
     if (index !== -1) params.attrs.splice(index, 1);
   } else {

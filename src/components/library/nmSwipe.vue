@@ -3,13 +3,24 @@
     <ul class="carousel-body">
       <li
         class="carousel-item"
-        v-for="(item, index) in sliders.values"
+        v-for="(item, index) in sliderList"
         :key="item.id"
         :class="{ fade: cur === index }"
       >
-        <RouterLink to="/">
-          <img v-if="index === cur" :src="item.imgUrl" alt="" />
+        <RouterLink to="/" v-if="item.imgUrl">
+          <img :src="item.imgUrl" alt="" />
         </RouterLink>
+        <div v-else class="slider">
+          <router-link
+            v-for="goods in item"
+            :key="goods.id"
+            :to="`/product/${goods.id}`"
+          >
+            <img :src="goods.picture" alt="" />
+            <p class="name ellipsis">{{ goods.name }}</p>
+            <p class="price">&yen;{{ goods.price }}</p>
+          </router-link>
+        </div>
       </li>
     </ul>
     <a href="javascript:;" @click="toggle(-1)" class="carousel-btn prev"
@@ -21,7 +32,7 @@
 
     <div class="carousel-indicator">
       <span
-        v-for="(item, index) in sliders.values.length"
+        v-for="(item, index) in sliderList.length"
         :key="index"
         :class="{ active: index === cur }"
         @click="cur = index"
@@ -31,7 +42,7 @@
 </template>
 
 <script setup>
-import { onUnmounted, ref, watch } from "vue";
+import { onUnmounted, ref, watch, computed } from "vue";
 const props = defineProps({
   sliders: {
     type: Array,
@@ -46,12 +57,15 @@ const props = defineProps({
     default: () => false,
   },
 });
+
 const cur = ref(0);
 let timer = null;
-
+const sliderList = new computed(() => {
+  return props.sliders.values?.length ? props.sliders.values : props.sliders;
+});
 const toggle = (num) => {
   let val = cur.value + num;
-  let len = props.sliders.values.length;
+  let len = sliderList.length;
   if (val >= len) cur.value = 0;
   else if (val < 0) cur.value = len - 1;
   else cur.value = val;
@@ -107,6 +121,30 @@ onUnmounted(() => {
       img {
         width: 100%;
         height: 100%;
+      }
+      .slider {
+        display: flex;
+        justify-content: space-around;
+        padding: 0 40px;
+        > a {
+          width: 240px;
+          text-align: center;
+          img {
+            padding: 20px;
+            width: 230px !important;
+            height: 230px !important;
+          }
+          .name {
+            font-size: 16px;
+            color: #666;
+            padding: 0 40px;
+          }
+          .price {
+            font-size: 16px;
+            color: @priceColor;
+            margin-top: 15px;
+          }
+        }
       }
     }
     &-indicator {

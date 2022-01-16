@@ -48,9 +48,6 @@ import { ref } from "vue";
 import { useLazyData } from "@/hook/index";
 const box = ref(null);
 const list = useLazyData(box, findSpecial);
-setTimeout(() => {
-  console.log(list.value);
-}, 1500);
 </script>
 
 <style scoped lang="less">

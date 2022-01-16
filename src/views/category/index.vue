@@ -72,13 +72,9 @@ findBanner().then((data) => {
 const reqCategory = () => {
   findTopCategory(route.params.id)
     .then((res) => {
-      console.log(res);
       subList.value = { ...res.result };
-      console.log(subList.value);
     })
-    .catch((err) => {
-      console.log("err", subList.value);
-    });
+    .catch((err) => {});
 };
 watch(
   () => route.params.id,
