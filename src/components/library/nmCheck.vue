@@ -14,10 +14,12 @@ const props = defineProps({
     default: false,
   },
 });
-const emits = defineEmits(["update:modalValue"]);
+const emits = defineEmits(["update:modelValue", "change"]);
 const checked = useVModel(props, "modelValue", emits);
 const changeStatus = () => {
-  checked.value = !checked.value;
+  // checked.value = !checked.value;
+  emits("change", !props.modelValue);
+  emits("update:modalValue", !props.modelValue);
 };
 </script>
 <style scoped lang="less">

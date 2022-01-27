@@ -34,7 +34,11 @@
             @change="changeSku"
           ></goods-sku>
           <nm-number v-model="goodsNum"></nm-number>
-          <nm-button style="margin-top: 10px" type="primary" size="small"
+          <nm-button
+            @click="insertCart"
+            style="margin-top: 10px"
+            type="primary"
+            size="small"
             >购买</nm-button
           >
         </div>
@@ -74,7 +78,9 @@ import GoodsWarn from "./components/goods_warn.vue";
 import { getProductInfo } from "@/api/product";
 import { nextTick, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import { useStore } from "vuex";
 import { provide } from "vue";
+import Message from "@/components/library/Message";
 
 const route = useRoute();
 const productInfo = ref({});
@@ -83,11 +89,10 @@ watch(
   (newVal) => {
     if (newVal && route.path === `/product/${route.params.id}`) {
       getProductInfo(route.params.id).then((res) => {
-        console.log("val", res.result);
-
         productInfo.value = null;
         nextTick(() => {
           productInfo.value = { ...res.result };
+          console.log(productInfo.value);
         });
       });
     }
@@ -95,11 +100,30 @@ watch(
   { immediate: true }
 );
 provide("goods", productInfo);
-
+const store = useStore();
+const goodsInfo = ref({});
 const changeSku = (e) => {
-  console.log(e);
+  goodsInfo.value = {
+    ...e,
+  };
 };
 const goodsNum = ref(1);
+const insertCart = () => {
+  if (!goodsInfo.value.skuId) return Message({ text: "请选择完整的商品规格" });
+  store
+    .dispatch("cart/insertCart", {
+      ...goodsInfo.value,
+      picture: productInfo.value.mainPictures[0],
+      selected: true,
+      count: goodsNum.value,
+      id: productInfo.value.id,
+      name: productInfo.value.name,
+      isEffective: true,
+    })
+    .then((res) => {
+      Message({ text: "插入成功", type: "success" });
+    });
+};
 </script>
 
 <style scoped lang="less">

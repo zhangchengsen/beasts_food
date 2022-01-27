@@ -3,46 +3,60 @@
     <!-- 购物车图标 -->
     <RouterLink class="curr" to="/cart">
       <i class="iconfont icon-cart"></i>
-      <em>2</em>
+      <em>{{ $store.getters["cart/validCounts"] }}</em>
     </RouterLink>
     <!-- 购物车弹出层 -->
-    <div class="layer" v-if="$store.getters['cart/validTotal']>0&&$route.path!=='/cart'">
+    <div
+      class="layer"
+      v-if="$store.getters['cart/validCounts'] > 0 && $route.path !== '/cart'"
+    >
       <div class="list">
-        <div class="item" v-for="goods in $store.getters['cart/validList']" :key="goods.skuId">
+        <div
+          class="item"
+          v-for="goods in $store.getters['cart/validList']"
+          :key="goods.skuId"
+        >
           <RouterLink :to="`/product/${goods.id}`">
             <img :src="goods.picture" alt="" />
             <div class="center">
-              <p class="name ellipsis-2">{{goods.name}}</p>
-              <p class="attr ellipsis">{{goods.attrsText}}</p>
+              <p class="name ellipsis-2">{{ goods.name }}</p>
+              <p class="attr ellipsis">{{ goods.attrsText }}</p>
             </div>
             <div class="right">
-              <p class="price">&yen;{{goods.nowPrice}}</p>
-              <p class="count">x{{goods.count}}</p>
+              <p class="price">&yen;{{ goods.nowPrice }}</p>
+              <p class="count">x{{ goods.count }}</p>
             </div>
           </RouterLink>
-          <i @click="deleteCart(goods.skuId)" class="iconfont icon-close-new"></i>
+          <i
+            @click="deleteCart(goods.skuId)"
+            class="iconfont icon-close-new"
+          ></i>
         </div>
       </div>
       <div class="foot">
         <div class="total">
-          <p>共 {{$store.getters['cart/validTotal']}} 件商品</p>
-          <p>&yen;{{$store.getters['cart/validAmount']}}</p>
+          <p>共 {{ $store.getters["cart/validCounts"] }} 件商品</p>
+          <p>&yen;{{ $store.getters["cart/validPrice"] }}</p>
         </div>
-        <XtxButton @click="$router.push('/cart')" type="plain">去购物车结算</XtxButton>
+        <nmButton @click="$router.push('/cart')" type="plain"
+          >去购物车结算</nmButton
+        >
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { useStore } from 'vuex'
-// import Message from './library/Message'
-    const store = useStore()
-
+import { useStore } from "vuex";
+// import Message from "./library/Message";
+import { useRoute } from "vue-router";
+const route = useRoute();
+const $store = useStore();
+$store.dispatch("cart/updateCart");
+const deleteCart = (skuId) => $store.dispatch("cart/deleteCartItem", skuId);
 </script>
 <style scoped lang="less">
 .cart {
   width: 50px;
-  // 加下限制
   position: relative;
   z-index: 600;
   .curr {
@@ -68,24 +82,22 @@ import { useStore } from 'vuex'
       font-family: Arial;
     }
   }
-  // 鼠标经过显示弹层
   &:hover {
     .layer {
       opacity: 1;
-      transform: none
+      transform: none;
     }
   }
-  // 弹层样式
   .layer {
     opacity: 0;
-    transition: all .4s .2s;
+    transition: all 0.4s 0.2s;
     transform: translateY(-200px) scale(1, 0);
     width: 400px;
     height: 400px;
     position: absolute;
     top: 50px;
     right: 0;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     background: #fff;
     border-radius: 4px;
     padding-top: 10px;
@@ -97,8 +109,8 @@ import { useStore } from 'vuex'
       width: 20px;
       height: 20px;
       background: #fff;
-      transform: scale(0.6,1) rotate(45deg);
-      box-shadow: -3px -3px 5px rgba(0,0,0,0.1);
+      transform: scale(0.6, 1) rotate(45deg);
+      box-shadow: -3px -3px 5px rgba(0, 0, 0, 0.1);
     }
     .foot {
       position: absolute;
@@ -127,19 +139,19 @@ import { useStore } from 'vuex'
     height: 310px;
     overflow: auto;
     padding: 0 10px;
-    &::-webkit-scrollbar{
-      width:10px;
-      height:10px;
+    &::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
     }
-    &::-webkit-scrollbar-track{
+    &::-webkit-scrollbar-track {
       background: #f8f8f8;
       border-radius: 2px;
     }
-    &::-webkit-scrollbar-thumb{
+    &::-webkit-scrollbar-thumb {
       background: #eee;
-      border-radius:10px;
+      border-radius: 10px;
     }
-    &::-webkit-scrollbar-thumb:hover{
+    &::-webkit-scrollbar-thumb:hover {
       background: #ccc;
     }
     .item {
@@ -147,12 +159,12 @@ import { useStore } from 'vuex'
       padding: 10px 0;
       position: relative;
       i {
-          position: absolute;
-          bottom: 38px;
-          right: 0;
-          opacity: 0;
-          color: #666;
-          transition: all .5s;
+        position: absolute;
+        bottom: 38px;
+        right: 0;
+        opacity: 0;
+        color: #666;
+        transition: all 0.5s;
       }
       &:hover {
         i {

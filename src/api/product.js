@@ -19,3 +19,14 @@ export const getComments = (id) => {
 export const getCommentsList = (id, params) => {
     return request(`https://mock.boxuegu.com/mock/1175/goods/${id}/evaluate/page`, 'get', params)
 }
+/**
+ * 
+ * @param {sku唯一标识} skuId 
+ * @returns 购物车最新商品信息
+ */
+export const getNewCartGoods = (skuId) => {
+    return request(`/goods/stock/${skuId}`, 'get')
+}
+export const getGoodsSku = (skuId) => {
+    return request(`/goods/sku/${skuId}`, 'get')
+}

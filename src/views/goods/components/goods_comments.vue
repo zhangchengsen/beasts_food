@@ -87,7 +87,6 @@ const commentInfo = ref({});
 const commentList = ref([]);
 const activeIdx = ref(0);
 getComments(route.params.id).then(({ result: res }) => {
-  console.log(res);
   commentInfo.value = { ...res };
   let list = [];
   list.push({ title: "全部评价", tagCount: res.evaluateCount, type: "all" });

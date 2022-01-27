@@ -1,6 +1,6 @@
 <template>
   <div class="nm-numbox">
-    <div class="label">数量</div>
+    <div class="label" v-if="label">数量</div>
     <div class="numbox">
       <a href="javascript:;" @click="updateVal(-1)">-</a>
       <input type="text" readonly :value="modelValue" />
@@ -14,12 +14,16 @@ const props = defineProps({
     type: Number,
     default: 1,
   },
+  label: {
+    type: Boolean,
+    default: true,
+  },
 });
 const emits = defineEmits(["update:modelValue", "change"]);
 const updateVal = (num) => {
   if (props.modelValue + num === 0) return;
   emits("update:modelValue", props.modelValue + num);
-  emits("change", props.modelValue);
+  emits("change", props.modelValue + num);
 };
 </script>
 <style scoped lang="less">

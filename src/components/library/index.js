@@ -7,6 +7,7 @@
 // import nmMore from './nm-more.vue'
 // import nmBread from './nmbread.vue'
 // import nmBreadItem from './nm_bread_item.vue'
+import Confirm from './Confirm'
 import defaultImg from '@/assets/images/default.jpg'
 export default {
     install(app) {
@@ -25,6 +26,7 @@ export default {
             app.component(componentName, component)
         });
         defineDirective(app)
+        app.config.globalProperties.$Confirm = Confirm
     }
 }
 

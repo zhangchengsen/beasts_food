@@ -24,6 +24,20 @@
 </template>
 <script setup>
 import powerSet from "@/vender/power_set";
+const props = defineProps({
+  goods: {
+    type: Object,
+    default: () => ({}),
+  },
+  skus: {
+    type: Array,
+    default: () => [],
+  },
+  skuId: {
+    type: String,
+    default: "",
+  },
+});
 const map = {};
 const getSkusSet = () => {
   let list = [...props.skus];
@@ -52,6 +66,17 @@ const getSkuList = () => {
   });
   return arr;
 };
+const init = () => {
+  if (!props.skuId) return;
+  console.log(props.goods);
+  props.goods.forEach((v) => {
+    v.values.forEach((item) => {
+      let index = map[item.name].findIndex((i) => i === props.skuId);
+      if (index > -1) item.selected = true;
+    });
+  });
+};
+init();
 const updateButtonStatus = () => {
   props.goods.forEach((item, i) => {
     const selectedValues = getSkuList();
@@ -63,17 +88,7 @@ const updateButtonStatus = () => {
     });
   });
 };
-updateButtonStatus();
-const props = defineProps({
-  goods: {
-    type: Object,
-    default: () => ({}),
-  },
-  skus: {
-    type: Array,
-    default: () => [],
-  },
-});
+
 const emits = defineEmits(["change"]);
 const changeSelected = (specs, item) => {
   if (item.disabled) return;
@@ -87,16 +102,17 @@ const changeSelected = (specs, item) => {
   }
   updateButtonStatus();
   const selectedValues = getSkuList();
+
   let index = selectedValues.findIndex((v) => v == null);
   if (index === -1) {
     let id = map[selectedValues.join("$")];
     let target = props.skus.find((item) => item.id == id[0]);
     emits("change", {
       skuId: target.id,
-      price: target.price,
-      oldPrice: target.oldPrice,
-      inventory: target.inventory,
-      specsText: target.specs
+      nowPrice: target.price,
+      price: target.oldPrice,
+      stock: target.inventory,
+      attrsText: target.specs
         .reduce((p, c) => `${p} ${c.name}: ${c.valueName}`, "")
         .trim(),
     });

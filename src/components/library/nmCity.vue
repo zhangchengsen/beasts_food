@@ -78,9 +78,7 @@ const props = defineProps({
 });
 watch(
   () => props.cityList,
-  (newVal) => {
-    if (newVal?.values?.length) console.log("props.cityList有值啦", newVal);
-  },
+  (newVal) => {},
   { deep: true, immediate: true }
 );
 const areaInfo = reactive({

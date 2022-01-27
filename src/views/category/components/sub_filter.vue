@@ -79,7 +79,6 @@ watch(
       newVal &&
         findSubCategoryFilter(route.params.id).then(({ result }) => {
           // 品牌全部
-          console.log(result);
           result.selectedBrand = null;
           result.brands.unshift({ id: null, name: "全部" });
           // 销售属性全部
