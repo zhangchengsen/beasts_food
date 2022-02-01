@@ -1,27 +1,46 @@
 <template>
-  <div class="xtx-dialog" :class="{ fade }">
+  <div class="xtx-dialog" :class="{ fade }" v-show="visible">
     <div class="wrapper" :class="{ fade }">
       <div class="header">
-        <h3>切换收货地址</h3>
+        <h3>{{ title }}</h3>
         <a href="JavaScript:;" class="iconfont icon-close-new"></a>
       </div>
-      <div class="body">对话框内容</div>
+      <div class="body">
+        <slot></slot>
+      </div>
       <div class="footer">
-        <nmButton type="gray" style="margin-right: 20px">取消</nmButton>
-        <nmButton type="primary">确认</nmButton>
+        <slot name="footer" />
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
-const fade = ref(false);
-onMounted(() => {
-  // 结构和样式同时加上无过度效果，需要些延时。
-  setTimeout(() => {
-    fade.value = true;
-  }, 0);
+import { ref, onMounted, watch } from "vue";
+const props = defineProps({
+  title: {
+    type: String,
+    default: "",
+  },
+  visible: {
+    type: Boolean,
+    default: false,
+  },
 });
+const fade = ref(true);
+// 改造动画执行时机
+watch(
+  () => props.visible,
+  () => {
+    setTimeout(() => {
+      fade.value = props.visible;
+    }, 0);
+  },
+  { immediate: true }
+);
+// 关闭的时候通知父组件
+const close = () => {
+  emit("update:visible", false);
+};
 </script>
 <style scoped lang="less">
 .xtx-dialog {

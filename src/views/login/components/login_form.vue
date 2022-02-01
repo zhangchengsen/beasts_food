@@ -215,6 +215,7 @@ const login = async () => {
       Message({ text: "登录成功", type: "success" });
     });
   } catch (e) {
+    console.log(e);
     if (e.response.data?.message) {
       Message({ type: "error", text: e.response.data.message });
     }

@@ -1,12 +1,13 @@
 // 提供复用逻辑的函数的钩子
-
+import { useIntervalFn } from "@vueuse/core";
+import dayjs from "dayjs";
+import { ref, onUnmounted } from "vue";
 /**
  * 
  * @param {Object} target dom对象     
  * @param {Function} apiFn  api回调函数 
     懒加载函数
 */
-import { ref } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 export const useLazyData = (target, apiFn) => {
     const res = ref([])
@@ -40,3 +41,21 @@ export const useLazyData = (target, apiFn) => {
 //     return { rf }
 
 // }
+export const usePayTime = (times) => {
+    const time = ref(times);
+    console.log(times)
+    const timeText = ref(0);
+    const { pause, resume } = useIntervalFn(
+        () => {
+            time.value--;
+            timeText.value = dayjs.unix(time.value).format("mm分ss秒");
+        },
+        1000,
+        false
+    );
+    onUnmounted(() => {
+        pause();
+    });
+    return { pause, resume, timeText }
+
+}

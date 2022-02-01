@@ -185,7 +185,7 @@ const settle = () => {
     Confirm({ title: "温馨提示", content: "下单结算需要登录，您是否去登录？" })
       .then(() => {
         // 点击确认
-        router.push("/member/checkout");
+        router.push("/login");
       })
       .catch((e) => {});
   } else {

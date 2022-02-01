@@ -12,21 +12,23 @@
         <div class="box-body">
           <div class="address">
             <div class="text">
-              <div class="none" v-if="!userAddresss">
+              <div class="none" v-if="!userAddress.receiver">
                 您需要先添加收货地址才可提交订单。
               </div>
               <ul v-else>
                 <li>
-                  <span>收<i />货<i />人：</span>{{ userAddress.username }}
+                  <span>收<i />货<i />人：</span>{{ userAddress.receiver }}
                 </li>
-                <li><span>联系方式：</span>{{ userAddress.phone }}</li>
-                <li><span>收货地址：</span>{{ userAddress.fullAddress }}</li>
+                <li><span>联系方式：</span>{{ userAddress.contact }}</li>
+                <li><span>收货地址：</span>{{ userAddress.fullLocation }}</li>
               </ul>
-              <a href="javascript:;">修改地址</a>
+              <!-- <a href="javascript:;">修改地址</a> -->
             </div>
             <div class="action">
-              <nmButton class="btn">切换地址</nmButton>
-              <nmButton class="btn">添加地址</nmButton>
+              <nmButton class="btn" @click="Message({ text: '服务端错误' })"
+                >切换地址</nmButton
+              >
+              <!-- <nmButton class="btn" @click="open">添加地址</nmButton> -->
             </div>
           </div>
         </div>
@@ -115,31 +117,86 @@
         </div>
         <!-- 提交订单 -->
         <div class="submit">
-          <nmButton type="primary">提交订单</nmButton>
+          <nmButton type="primary" @click="createOrder">提交订单</nmButton>
         </div>
       </div>
+      <!-- <nmDialog :visible="visible" :title="'切换收货地址'">
+        <addAddress />
+        <template v-slot:footer>
+          <nmButton type="gray" style="margin-right: 20px">取消</nmButton>
+          <nmButton type="primary">确认</nmButton>
+        </template>
+      </nmDialog> -->
     </div>
   </div>
 </template>
 <script setup>
 import { useStore } from "vuex";
-import { createOrder } from "@/api/pay";
+import { createOrder as createOrders, setOrder } from "@/api/pay";
 import Message from "@/components/library/Message";
-import { ref, reactive } from "vue";
+import { ref, reactive, computed } from "vue";
+import { useRouter } from "vue-router";
+import addAddress from "./components/pay_address.vue";
 const store = useStore();
-createOrder()
-  .then((res) => {
-    console.log(res);
+const router = useRouter();
+const reqParams = reactive({
+  deliveryTimeType: 1,
+  payType: 1,
+  payChannel: 1,
+  buyerMessage: "",
+  // 商品信息，获取订单信息后设置
+  goods: [],
+  // 收货地址，切换收货地址或者组件默认的时候设置
+  addressId: null,
+});
+const createOrder = () => {
+  reqParams.addressId = userAddress.value.id;
+
+  reqParams.goods = memberInfo.values.goods.map((item) => {
+    return {
+      skuId: item.skuId,
+      count: item.count,
+    };
+  });
+  createOrders(reqParams)
+    .then(({ result: res }) => {
+      console.log(res);
+      router.push(
+        `/member/pay?id=${res.id}&count=${res.countdown ? res.countdown : 0}`
+      );
+    })
+    .catch((err) => {
+      console.log(err);
+      Message({ type: "error", data: err.response?.data.message });
+    });
+};
+const userAddress = computed(() => {
+  // if (!memberInfo.values) return {};
+  if (memberInfo.values)
+    return memberInfo.values.userAddresses.filter((v) => !v.isDefault)[0];
+  else return {};
+  // return memberInfo.values.userAddresses.filter((v) => !v.isDefault);
+});
+setOrder(reqParams)
+  .then(({ result: res }) => {
+    memberInfo.values = { ...res };
   })
   .catch((err) => {
-    let e = err.response.data;
-    Message({ type: "error", text: e?.Message ? e.Message : "创建订单失败" });
+    let e = err.response?.data || err;
+    Message({
+      type: "error",
+      text: e?.Message ? e.Message : e + "创建订单失败",
+    });
   });
-const userAddress = reactive({
-  username: "朱超",
-  phone: "132****2222",
-  fullAddress: "海南省三亚市解放路108号物质大厦1003室",
-});
+const memberInfo = reactive({});
+
+const visible = ref(false);
+const open = () => {
+  visible.value = true;
+};
+const close = () => {
+  visible.value = false;
+};
 </script>
 <style scoped lang="less">
 .nm-pay-checkout-page {

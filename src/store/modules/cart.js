@@ -1,5 +1,5 @@
 import { getNewCartGoods } from '@/api/product'
-import { insertCart } from '@/api/member'
+import { insertCart, mergeCart } from '@/api/member'
 
 import Message from '@/components/library/Message'
 export default {
